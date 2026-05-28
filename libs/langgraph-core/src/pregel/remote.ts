@@ -202,7 +202,8 @@ export class RemoteGraph<
     PregelOutputType,
     PregelOptions<Nn, Cc, ContextType>
   >
-  implements PregelInterface<Nn, Cc, ContextType> {
+  implements PregelInterface<Nn, Cc, ContextType>
+{
   static lc_name() {
     return "RemoteGraph";
   }
@@ -297,8 +298,8 @@ export class RemoteGraph<
         ) {
           const metadata =
             typeof record.metadata === "object" &&
-              record.metadata != null &&
-              !Array.isArray(record.metadata)
+            record.metadata != null &&
+            !Array.isArray(record.metadata)
               ? (record.metadata as Record<string, unknown>)
               : undefined;
           record.metadata =
@@ -406,13 +407,13 @@ export class RemoteGraph<
       createdAt: state.created_at ?? undefined,
       parentConfig: state.parent_checkpoint
         ? {
-          configurable: {
-            thread_id: state.parent_checkpoint.thread_id,
-            checkpoint_ns: state.parent_checkpoint.checkpoint_ns,
-            checkpoint_id: state.parent_checkpoint.checkpoint_id,
-            checkpoint_map: state.parent_checkpoint.checkpoint_map ?? {},
-          },
-        }
+            configurable: {
+              thread_id: state.parent_checkpoint.thread_id,
+              checkpoint_ns: state.parent_checkpoint.checkpoint_ns,
+              checkpoint_id: state.parent_checkpoint.checkpoint_id,
+              checkpoint_map: state.parent_checkpoint.checkpoint_map ?? {},
+            },
+          }
         : undefined,
       tasks,
     };
@@ -475,8 +476,9 @@ export class RemoteGraph<
     | Promise<RemoteGraphRunStream<PregelOutputType>>
     | Promise<IterableReadableStream<Uint8Array>>
     | Promise<
-      RemoteGraphRunStream<PregelOutputType> | IterableReadableStream<Uint8Array>
-    > {
+        | RemoteGraphRunStream<PregelOutputType>
+        | IterableReadableStream<Uint8Array>
+      > {
     if (options.version === "v3") {
       return this._streamEventsV3(
         input,

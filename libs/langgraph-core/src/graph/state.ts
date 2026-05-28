@@ -67,7 +67,12 @@ import {
   StateType,
 } from "./annotation.js";
 import { StateSchema } from "../state/index.js";
-import type { CachePolicy, RetryPolicy } from "../pregel/utils/index.js";
+import type {
+  CachePolicy,
+  RetryPolicy,
+  TimeoutPolicy,
+} from "../pregel/utils/index.js";
+import { coerceTimeoutPolicy } from "../pregel/utils/index.js";
 import { isPregelLike } from "../pregel/utils/subgraph.js";
 import { LastValueAfterFinish } from "../channels/last_value.js";
 import { type SchemaMetaRegistry, schemaMetaRegistry } from "./zod/meta.js";
@@ -112,6 +117,7 @@ export type StateGraphNodeSpec<RunInput, RunOutput> = NodeSpec<
   input?: StateDefinition;
   retryPolicy?: RetryPolicy;
   cachePolicy?: CachePolicy;
+  timeout?: TimeoutPolicy;
 };
 
 /**
@@ -128,6 +134,13 @@ export type StateGraphAddNodeOptions<
 > = {
   retryPolicy?: RetryPolicy;
   cachePolicy?: CachePolicy | boolean;
+  /**
+   * Maximum duration for a single attempt of this node. Accepts a number of
+   * milliseconds (a hard wall-clock cap) or a {@link TimeoutPolicy} for finer
+   * control over run / idle timeouts. When exceeded, a {@link NodeTimeoutError}
+   * is raised and the node's retry policy (if any) decides whether to retry.
+   */
+  timeout?: number | TimeoutPolicy;
   input?: InputSchema;
 } & AddNodeOptions<Nodes>;
 
@@ -911,6 +924,7 @@ export class StateGraph<
         runnable: runnable as unknown as Runnable<S, U>,
         retryPolicy: options?.retryPolicy,
         cachePolicy,
+        timeout: coerceTimeoutPolicy(options?.timeout),
         metadata: options?.metadata,
         input: inputSpec ?? this._schemaDefinition,
         subgraphs: isPregelLike(runnable)
@@ -1454,6 +1468,7 @@ export class CompiledStateGraph<
         metadata: node?.metadata,
         retryPolicy: node?.retryPolicy,
         cachePolicy: node?.cachePolicy,
+        timeout: node?.timeout,
         subgraphs: node?.subgraphs,
         ends: node?.ends,
       });

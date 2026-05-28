@@ -10,6 +10,7 @@ import {
   combineAbortSignals,
   patchConfigurable,
   RetryPolicy,
+  TimeoutPolicy,
 } from "./utils/index.js";
 import {
   CONFIG_KEY_SCRATCHPAD,
@@ -427,6 +428,7 @@ async function call(
   options: {
     retry?: RetryPolicy;
     cache?: CachePolicy;
+    timeout?: TimeoutPolicy;
     callbacks?: unknown;
   } = {}
 ): Promise<unknown> {
@@ -451,6 +453,7 @@ async function call(
     input,
     cache: options.cache,
     retry: options.retry,
+    timeout: options.timeout,
     callbacks: options.callbacks,
   });
   const nextTask = await this.scheduleTask(task, cnt, wcall);

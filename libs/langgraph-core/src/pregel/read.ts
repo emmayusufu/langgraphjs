@@ -88,6 +88,10 @@ interface PregelNodeArgs<RunInput, RunOutput> extends Partial<
   cachePolicy?: CachePolicy;
   subgraphs?: Runnable[];
   ends?: string[];
+  /** Whether this node is an auto-generated node-level error handler. */
+  isErrorHandler?: boolean;
+  /** Name of the error handler node to run if this node's execution fails. */
+  errorHandlerNode?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,6 +132,10 @@ export class PregelNode<
 
   ends?: string[];
 
+  isErrorHandler?: boolean;
+
+  errorHandlerNode?: string;
+
   constructor(fields: PregelNodeArgs<RunInput, RunOutput>) {
     const {
       channels,
@@ -142,6 +150,8 @@ export class PregelNode<
       tags,
       subgraphs,
       ends,
+      isErrorHandler,
+      errorHandlerNode,
     } = fields;
     const mergedTags = [
       ...(fields.config?.tags ? fields.config.tags : []),
@@ -171,6 +181,8 @@ export class PregelNode<
     this.cachePolicy = cachePolicy;
     this.subgraphs = subgraphs;
     this.ends = ends;
+    this.isErrorHandler = isErrorHandler;
+    this.errorHandlerNode = errorHandlerNode;
   }
 
   getWriters(): Array<Runnable> {
